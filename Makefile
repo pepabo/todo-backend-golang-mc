@@ -24,7 +24,7 @@ deploy:
 	scp -P ${SSH_PORT} ./.env.production ${SSH_USER}@${SSH_HOST}:/var/app/.env
 	ssh -p ${SSH_PORT} ${SSH_USER}@${SSH_HOST} 'ln -sf /var/app/myapp-${SUFFIX} /var/app/myapp'
 	ssh -p ${SSH_PORT} ${SSH_USER}@${SSH_HOST} 'ls -t /var/app/myapp-* | tail -n+${KEEP} | xargs --no-run-if-empty rm'
-	rm myapp-${SUFFIX} .env.production
+	rm ./myapp-${SUFFIX} ./.env.production
 
 initdb:
 	scp -P ${SSH_PORT} ./initdb.sql ${SSH_USER}@${SSH_HOST}:/tmp/initdb.sql
