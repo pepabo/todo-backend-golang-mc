@@ -16,10 +16,15 @@ deploy:
 	$(eval SUFFIX = $(shell date '+%Y%m%d-%H%M%S'))
 	$(eval KEEP = $(shell expr ${ROTATE} + 1))
 	env GOOS=linux GOARCH=amd64 $(GO) build -o myapp-${SUFFIX} main.go
+	echo DB_NAME=${DB_NAME} >> ./.env.production
+	echo DB_USER=${DB_USER} >> ./.env.production
+	echo DB_PASS=${DB_PASS} >> ./.env.production
+	echo DB_HOST=${DB_HOST} >> ./.env.production
 	scp -P ${SSH_PORT} ./myapp-${SUFFIX} ${SSH_USER}@${SSH_HOST}:/var/app/myapp-${SUFFIX}
+	scp -P ${SSH_PORT} ./.env.production ${SSH_USER}@${SSH_HOST}:/var/app/.env
 	ssh -p ${SSH_PORT} ${SSH_USER}@${SSH_HOST} 'ln -sf /var/app/myapp-${SUFFIX} /var/app/myapp'
 	ssh -p ${SSH_PORT} ${SSH_USER}@${SSH_HOST} 'ls -t /var/app/myapp-* | tail -n+${KEEP} | xargs --no-run-if-empty rm'
-	rm myapp-${SUFFIX}
+	rm myapp-${SUFFIX} .env.production
 
 initdb:
 	scp -P ${SSH_PORT} ./initdb.sql ${SSH_USER}@${SSH_HOST}:/tmp/initdb.sql

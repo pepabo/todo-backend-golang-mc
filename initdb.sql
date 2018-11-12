@@ -1,8 +1,7 @@
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS access_logs;
 
-CREATE TABLE users (
+CREATE TABLE access_logs (
   id int PRIMARY KEY AUTO_INCREMENT,
-  username varchar (50) UNIQUE NOT NULL,
-  password varchar (50) NOT NULL,
-  email varchar (355) UNIQUE NOT NULL COMMENT 'ex. user@example.com'
-) COMMENT = 'Users table';
+  ua text NOT NULL,
+  created_at timestamp DEFAULT CURRENT_TIMESTAMP
+) COMMENT = 'access log';
