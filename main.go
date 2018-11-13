@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -11,6 +12,42 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 )
+
+const tpl = `
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>{{.Title}}</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+	</head>
+	<body>
+    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+      <thead>
+        <tr>
+          <th class="mdl-data-table__cell--non-numeric">UA</th>
+          <th>Created At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range $i, $l := .Logs}}
+        <tr>
+          <td class="mdl-data-table__cell--non-numeric">{{ $l.UA }}</td><td>{{ $l.CreatedAt }}</td>
+        </tr>
+        {{end}}
+      <tbody>
+    </table>
+	</body>
+</html>`
+
+// Access ...
+type Access struct {
+	UA        string
+	CreatedAt time.Time
+}
 
 func main() {
 	err := godotenv.Load()
@@ -34,6 +71,7 @@ func main() {
 		}
 		defer rows.Close()
 
+		logs := []Access{}
 		for rows.Next() {
 			var ua string
 			var createdAt time.Time
@@ -41,7 +79,29 @@ func main() {
 			if err := rows.Scan(&ua, &createdAt); err != nil {
 				log.Fatal(err)
 			}
-			fmt.Fprintln(w, fmt.Sprintf("%s, %v\n", ua, createdAt))
+			a := Access{
+				UA:        ua,
+				CreatedAt: createdAt,
+			}
+			logs = append(logs, a)
+		}
+
+		t, err := template.New("page").Parse(tpl)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		data := struct {
+			Title string
+			Logs  []Access
+		}{
+			Title: "Access logs",
+			Logs:  logs,
+		}
+
+		err = t.Execute(w, data)
+		if err != nil {
+			log.Fatal(err)
 		}
 	})
 	log.Fatal(http.ListenAndServe(":8080", nil))

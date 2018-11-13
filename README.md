@@ -17,5 +17,5 @@ $ SSH_USER=test-test-123 SSH_PORT=33322 DB_NAME=dbname DB_USER=user DB_PASS=pass
 ![img](mc.png)
 
 ``` console
-$ SSH_USER=test-test-123 SSH_PORT=33322 make deploy
+$ SSH_USER=test-test-123 SSH_PORT=33322 DB_NAME=dbname DB_USER=user DB_PASS=pass make deploy
 ```
