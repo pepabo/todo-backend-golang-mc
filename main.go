@@ -16,15 +16,15 @@ import (
 const tpl = `
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>{{.Title}}</title>
+    <title>{{.Title}}</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
     <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-	</head>
-	<body>
+  </head>
+  <body>
     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
       <thead>
         <tr>
@@ -40,7 +40,7 @@ const tpl = `
         {{end}}
       <tbody>
     </table>
-	</body>
+  </body>
 </html>`
 
 // Access ...
