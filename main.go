@@ -9,39 +9,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/go-chi/chi"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 )
-
-const tpl = `
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{.Title}}</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
-    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-  </head>
-  <body>
-    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-      <thead>
-        <tr>
-          <th class="mdl-data-table__cell--non-numeric">UA</th>
-          <th>Created At</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{range $i, $l := .Logs}}
-        <tr>
-          <td class="mdl-data-table__cell--non-numeric">{{ $l.UA }}</td><td>{{ $l.CreatedAt }}</td>
-        </tr>
-        {{end}}
-      <tbody>
-    </table>
-  </body>
-</html>`
 
 // Access ...
 type Access struct {
@@ -55,7 +26,8 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	r := chi.NewRouter()
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		conn, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", os.Getenv("DB_USER"), os.Getenv("DB_PASS"), os.Getenv("DB_HOST"), os.Getenv("DB_NAME")))
 		if err != nil {
 			log.Fatal(err)
@@ -86,10 +58,7 @@ func main() {
 			logs = append(logs, a)
 		}
 
-		t, err := template.New("page").Parse(tpl)
-		if err != nil {
-			log.Fatal(err)
-		}
+		t := template.Must(template.ParseFiles("templates/index.html.tpl"))
 
 		data := struct {
 			Title string
@@ -104,5 +73,6 @@ func main() {
 			log.Fatal(err)
 		}
 	})
-	log.Fatal(http.ListenAndServe(":8080", nil))
+
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
