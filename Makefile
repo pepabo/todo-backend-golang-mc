@@ -1,11 +1,11 @@
-SSH_USER ?= test
 SSH_HOST ?= ssh-1.mc.lolipop.jp
 SSH_PORT ?= 10022
-DB_NAME ?= dbname
-DB_USER ?= user
-DB_PASS ?= pass
-DB_HOST ?= mysql-1.mc.lolipop.lan
-ROTATE ?= 5
+SSH_USER ?= test
+DB_NAME  ?= dbname
+DB_USER  ?= user
+DB_PASS  ?= pass
+DB_HOST  ?= mysql-1.mc.lolipop.lan
+ROTATE   ?= 5
 
 GO ?= GO111MODULE=on go
 
