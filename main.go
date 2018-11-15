@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/go-chi/chi"
 	_ "github.com/go-sql-driver/mysql"
@@ -33,7 +34,11 @@ func main() {
 			log.Fatal(err)
 		}
 
-		t := template.Must(template.ParseFiles("templates/index.html.tpl"))
+		exe, err := os.Executable()
+		if err != nil {
+			log.Fatal(err)
+		}
+		t := template.Must(template.ParseFiles(filepath.Join(filepath.Dir(exe), "templates/index.html.tpl")))
 
 		data := struct {
 			Title string
@@ -49,5 +54,6 @@ func main() {
 		}
 	})
 
+	log.Println("Start server.")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
