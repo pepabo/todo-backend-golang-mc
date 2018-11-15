@@ -2,8 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"html/template"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -50,6 +53,8 @@ func main() {
 			r.Delete("/", handler.deleteTodo)
 		})
 	})
+
+	r.Get("/", indexHandler)
 
 	log.Println("Start server.")
 	log.Fatal(http.ListenAndServe(":8080", r))
@@ -149,6 +154,23 @@ func (h *todoHandler) deleteTodo(w http.ResponseWriter, r *http.Request) {
 func (h *todoHandler) deleteAllTodos(w http.ResponseWriter, r *http.Request) {
 	h.service.DeleteAll()
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	exe, err := os.Executable()
+	if err != nil {
+		log.Fatal(err)
+	}
+	t := template.Must(template.ParseFiles(filepath.Join(filepath.Dir(exe), "templates/index.html.tpl")))
+	data := struct {
+		Title string
+	}{
+		Title: "Todo-Backend API server written in Go for \"LOLIPOP! Managed Cloud\"",
+	}
+	err = t.Execute(w, data)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func addURLToTodos(r *http.Request, todos ...*Todo) {
