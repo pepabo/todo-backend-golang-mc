@@ -1,4 +1,8 @@
-# mc-go-server
+# Todo-Backend API server written in Go for "LOLIPOP! Managed Cloud"
+
+[Todo-Backend](https://todobackend.com/)のTODOアプリのスペックに対応したバックエンドAPIサーバです。
+
+ロリポップ！マネージドクラウドのGoコンテナに2コマンドでデプロイ可能です。
 
 ## ビルド方法
 
