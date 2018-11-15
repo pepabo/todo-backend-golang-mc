@@ -1,9 +1,13 @@
-DROP TABLE IF EXISTS memo;
+SET NAMES utf8mb4 COLLATE utf8mb4_general_ci;
 
-CREATE TABLE memo (
+DROP TABLE IF EXISTS todos;
+
+CREATE TABLE todos (
   id int PRIMARY KEY AUTO_INCREMENT,
   title text NOT NULL,
-  body text NOT NULL,
-  created_at timestamp DEFAULT CURRENT_TIMESTAMP,
-  updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) COMMENT = 'memo';
+  completed boolean,
+  `order` int
+) COMMENT = 'TODO';
+
+INSERT INTO todos (title, completed, `order`) VALUES ('マネージドクラウドに登録する', false, 1);
+INSERT INTO todos (title, completed, `order`) VALUES ('マネージドクラウドでGoアプリケーションをデプロイする', false, 2);
