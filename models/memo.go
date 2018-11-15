@@ -16,7 +16,8 @@ type Memo struct {
 
 // GetMemos ...
 func GetMemos(conn *sql.DB) ([]Memo, error) {
-	rows, err := conn.Query("SELECT title, body, created_at, updated_at FROM memo ORDER BY created_at DESC")
+	query := "SELECT title, body, created_at, updated_at FROM memo ORDER BY created_at DESC"
+	rows, err := conn.Query(query)
 	if err != nil {
 		return nil, err
 	}

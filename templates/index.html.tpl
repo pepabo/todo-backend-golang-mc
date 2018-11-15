@@ -7,6 +7,11 @@
   </head>
   <body>
     <h1>{{.Title}}</h1>
+    <form method="post">
+      <input type="text" name="title" />
+      <input type="text" name="body" />
+      <input type="submit"/>
+    </form>
     <table>
       <thead>
         <tr>
