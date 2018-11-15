@@ -1,7 +1,9 @@
-DROP TABLE IF EXISTS access_logs;
+DROP TABLE IF EXISTS memo;
 
-CREATE TABLE access_logs (
+CREATE TABLE memo (
   id int PRIMARY KEY AUTO_INCREMENT,
-  ua text NOT NULL,
-  created_at timestamp DEFAULT CURRENT_TIMESTAMP
-) COMMENT = 'access log';
+  title text NOT NULL,
+  body text NOT NULL,
+  created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) COMMENT = 'memo';
