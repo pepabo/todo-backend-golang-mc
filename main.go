@@ -1,23 +1,21 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
-	"html/template"
-	"io/ioutil"
+	"encoding/json"
 	"log"
 	"net/http"
-	"net/url"
-	"os"
-	"path/filepath"
+	"strconv"
+	"strings"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/cors"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
-	"github.com/k1LoW/mc-go-server/models"
 )
 
-var conn *sql.DB
+type todoHandler struct {
+	service *TodoService
+}
 
 func main() {
 	err := godotenv.Load()
@@ -25,47 +23,139 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	conn, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", os.Getenv("DB_USER"), os.Getenv("DB_PASS"), os.Getenv("DB_HOST"), os.Getenv("DB_NAME")))
-	if err != nil {
-		log.Fatal(err)
+	handler := todoHandler{
+		service: NewTodoService(),
 	}
 
 	r := chi.NewRouter()
-	r.Get("/", getMemos)
-	r.Post("/", postMemo)
+
+	cors := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	})
+	r.Use(cors.Handler)
+
+	r.Route("/todos", func(r chi.Router) {
+		r.Get("/", handler.listTodos)
+		r.Post("/", handler.createTodo)
+		r.Delete("/", handler.deleteAllTodos)
+
+		r.Route("/{id}", func(r chi.Router) {
+			r.Get("/", handler.getTodo)
+			r.Patch("/", handler.updateTodo)
+			r.Delete("/", handler.deleteTodo)
+		})
+	})
 
 	log.Println("Start server.")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
 
-func getMemos(w http.ResponseWriter, r *http.Request) {
-	memos, err := models.GetMemos(conn)
+func (h *todoHandler) listTodos(w http.ResponseWriter, r *http.Request) {
+	todos, err := h.service.GetAll()
 	if err != nil {
-		log.Fatal(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-
-	exe, err := os.Executable()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	t := template.Must(template.ParseFiles(filepath.Join(filepath.Dir(exe), "templates/index.html.tpl")))
-	data := struct {
-		Title string
-		Memos []models.Memo
-	}{
-		Title: "Memo",
-		Memos: memos,
-	}
-	err = t.Execute(w, data)
-	if err != nil {
-		log.Fatal(err)
-	}
+	addURLToTodos(r, todos...)
+	json.NewEncoder(w).Encode(todos)
 }
 
-func postMemo(w http.ResponseWriter, r *http.Request) {
-	body, _ := ioutil.ReadAll(r.Body)
-	values, _ := url.ParseQuery(string(body))
+func (h *todoHandler) createTodo(w http.ResponseWriter, r *http.Request) {
+	todo := Todo{
+		Completed: false,
+	}
+	err := json.NewDecoder(r.Body).Decode(&todo)
+	if err != nil {
+		http.Error(w, err.Error(), 422)
+		return
+	}
+	err = h.service.Save(&todo)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	addURLToTodos(r, &todo)
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(todo)
+}
 
-	err := models.CreateMemo(conn)
+func (h *todoHandler) getTodo(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		http.Error(w, "Invalid Id", http.StatusBadRequest)
+		return
+	}
+	todo, err := h.service.Get(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if todo == nil {
+		http.NotFound(w, r)
+		return
+	}
+	addURLToTodos(r, todo)
+	json.NewEncoder(w).Encode(todo)
+}
+
+func (h *todoHandler) updateTodo(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		http.Error(w, "Invalid Id", http.StatusBadRequest)
+		return
+	}
+	todo, err := h.service.Get(id)
+	if err != nil {
+		if strings.ToLower(err.Error()) == "not found" {
+			http.NotFound(w, r)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = json.NewDecoder(r.Body).Decode(todo)
+	if err != nil {
+		http.Error(w, err.Error(), 422)
+		return
+	}
+	err = h.service.Save(todo)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	addURLToTodos(r, todo)
+	json.NewEncoder(w).Encode(todo)
+}
+
+func (h *todoHandler) deleteTodo(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		http.Error(w, "Invalid Id", http.StatusBadRequest)
+		return
+	}
+	err = h.service.Delete(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *todoHandler) deleteAllTodos(w http.ResponseWriter, r *http.Request) {
+	h.service.DeleteAll()
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func addURLToTodos(r *http.Request, todos ...*Todo) {
+	scheme := "https"
+	baseURL := scheme + "://" + r.Host + "/todos/"
+
+	for _, todo := range todos {
+		todo.URL = baseURL + strconv.Itoa(todo.ID)
+	}
 }

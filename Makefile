@@ -14,12 +14,15 @@ RELEASE_FILES = server templates
 build:
 	$(GO) build -o server
 
+server: build
+	./server
+
 deploy:
 	$(eval SUFFIX = $(shell date '+%Y%m%d-%H%M%S'))
 	$(eval KEEP = $(shell expr ${ROTATE} + 1))
 	rm -rf ./tmp.dist
 	mkdir tmp.dist/
-	env GOOS=linux GOARCH=amd64 $(GO) build -o server main.go
+	env GOOS=linux GOARCH=amd64 $(GO) build -o server
 	echo DB_NAME=${DB_NAME} >> ./tmp.dist/.env
 	echo DB_USER=${DB_USER} >> ./tmp.dist/.env
 	echo DB_PASS=${DB_PASS} >> ./tmp.dist/.env
