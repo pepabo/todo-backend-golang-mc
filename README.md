@@ -2,6 +2,8 @@
 
 [Todo-Backend](https://todobackend.com/)のTODOアプリのスペックに対応したバックエンドAPIサーバです。
 
+https://todobackend.com/client/index.html?https://todo-backend-golang-mc.lolipop.io/todos
+
 [ロリポップ！マネージドクラウド](https://mc.lolipop.jp)のGoプロジェクトに、**たった2コマンドで**デプロイ可能です。
 
 ## 事前準備
