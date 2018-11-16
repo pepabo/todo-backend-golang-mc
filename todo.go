@@ -8,7 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// Todo ...
+// Todo todosテーブルおよびレスポンスJSONにマッピングするためのモデルのstruct
 type Todo struct {
 	ID        int    `json:"-" db:"id"`
 	Title     string `json:"title" db:"title"`
@@ -17,12 +17,12 @@ type Todo struct {
 	URL       string `json:"url"`
 }
 
-// TodoService ...
+// TodoService TODOの操作を担うサービスのstruct
 type TodoService struct {
 	db *sqlx.DB
 }
 
-// NewTodoService ...
+// NewTodoService TodoServiceを返す
 func NewTodoService() *TodoService {
 	db, err := sqlx.Connect("mysql", fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", os.Getenv("DB_USER"), os.Getenv("DB_PASS"), os.Getenv("DB_HOST"), os.Getenv("DB_NAME")))
 	if err != nil {
@@ -34,7 +34,7 @@ func NewTodoService() *TodoService {
 	return &t
 }
 
-// GetAll ...
+// GetAll 全てのTODOリストを返す
 func (t *TodoService) GetAll() ([]*Todo, error) {
 	result := []Todo{}
 	err := t.db.Select(&result, "SELECT * FROM todos ORDER BY `order` ASC")
@@ -53,7 +53,7 @@ func (t *TodoService) GetAll() ([]*Todo, error) {
 	return todos, nil
 }
 
-// Get ...
+// Get 指定のTODOを返す
 func (t *TodoService) Get(id int) (*Todo, error) {
 	todo := Todo{}
 	err := t.db.Get(&todo, "SELECT * FROM todos WHERE id = ?", id)
@@ -63,14 +63,23 @@ func (t *TodoService) Get(id int) (*Todo, error) {
 	return &todo, nil
 }
 
-// Save ...
+// Save TODOを新規保存もしくは更新する
 func (t *TodoService) Save(todo *Todo) error {
 	if todo.ID == 0 {
 		tx := t.db.MustBegin()
-		result, _ := tx.NamedExec("INSERT INTO todos (title, completed, `order`) VALUES (:title, :completed, :order)", todo)
-		lastID, _ := result.LastInsertId()
+		result, err := tx.NamedExec("INSERT INTO todos (title, completed, `order`) VALUES (:title, :completed, :order)", todo)
+		if err != nil {
+			return err
+		}
+		lastID, err := result.LastInsertId()
+		if err != nil {
+			return err
+		}
 		todo.ID = int(lastID)
-		tx.Commit()
+		err = tx.Commit()
+		if err != nil {
+			return err
+		}
 		return nil
 	}
 	tx := t.db.MustBegin()
@@ -78,7 +87,10 @@ func (t *TodoService) Save(todo *Todo) error {
 	if err != nil {
 		return err
 	}
-	tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
 	err = t.db.Get(todo, "SELECT * FROM todos WHERE id = ?", todo.ID)
 	if err != nil {
 		return err
@@ -86,18 +98,24 @@ func (t *TodoService) Save(todo *Todo) error {
 	return nil
 }
 
-// DeleteAll ...
+// DeleteAll TODOを全て削除する
 func (t *TodoService) DeleteAll() error {
 	tx := t.db.MustBegin()
 	tx.MustExec("DELETE FROM todos")
-	tx.Commit()
+	err := tx.Commit()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-// Delete ...
+// Delete 指定のTODOを削除する
 func (t *TodoService) Delete(id int) error {
 	tx := t.db.MustBegin()
 	tx.MustExec("DELETE FROM todos WHERE id = ?", id)
-	tx.Commit()
+	err := tx.Commit()
+	if err != nil {
+		return err
+	}
 	return nil
 }

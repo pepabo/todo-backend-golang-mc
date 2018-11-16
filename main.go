@@ -16,6 +16,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// `/todos` のリクエストを取り扱うハンドラ
 type todoHandler struct {
 	service *TodoService
 }
@@ -25,6 +26,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	// 実行ファイルを同じディレクトリの.envファイルを読み込む
 	err = godotenv.Load(filepath.Join(filepath.Dir(exe), ".env"))
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -36,6 +38,7 @@ func main() {
 
 	r := chi.NewRouter()
 
+	// CORSの設定 go-chi のミドルウェア機構を使用
 	cors := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
@@ -46,6 +49,7 @@ func main() {
 	})
 	r.Use(cors.Handler)
 
+	// `/todos` のルーティング
 	r.Route("/todos", func(r chi.Router) {
 		r.Get("/", handler.listTodos)
 		r.Post("/", handler.createTodo)
@@ -58,9 +62,11 @@ func main() {
 		})
 	})
 
+	// `/` のルーティング
 	r.Get("/", indexHandler)
 
 	log.Println("Start server.")
+	// Webサーバの起動 ( 0.0.0.0:8080でlisten。ルーティングにgo-chiを使用 )
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
 
@@ -71,7 +77,11 @@ func (h *todoHandler) listTodos(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	addURLToTodos(r, todos...)
-	json.NewEncoder(w).Encode(todos)
+	err = json.NewEncoder(w).Encode(todos)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h *todoHandler) createTodo(w http.ResponseWriter, r *http.Request) {
@@ -90,7 +100,11 @@ func (h *todoHandler) createTodo(w http.ResponseWriter, r *http.Request) {
 	}
 	addURLToTodos(r, &todo)
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(todo)
+	err = json.NewEncoder(w).Encode(todo)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h *todoHandler) getTodo(w http.ResponseWriter, r *http.Request) {
@@ -109,7 +123,11 @@ func (h *todoHandler) getTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	addURLToTodos(r, todo)
-	json.NewEncoder(w).Encode(todo)
+	err = json.NewEncoder(w).Encode(todo)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h *todoHandler) updateTodo(w http.ResponseWriter, r *http.Request) {
@@ -138,7 +156,11 @@ func (h *todoHandler) updateTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	addURLToTodos(r, todo)
-	json.NewEncoder(w).Encode(todo)
+	err = json.NewEncoder(w).Encode(todo)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h *todoHandler) deleteTodo(w http.ResponseWriter, r *http.Request) {
@@ -156,7 +178,11 @@ func (h *todoHandler) deleteTodo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *todoHandler) deleteAllTodos(w http.ResponseWriter, r *http.Request) {
-	h.service.DeleteAll()
+	err := h.service.DeleteAll()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusNoContent)
 }
 
@@ -165,12 +191,14 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	// テンプレートファイルの読み込み
 	t := template.Must(template.ParseFiles(filepath.Join(filepath.Dir(exe), "templates/index.html.tpl")))
 	data := struct {
 		Title string
 	}{
 		Title: "Todo-Backend API server written in Go for \"LOLIPOP! Managed Cloud\"",
 	}
+	// テンプレートのレンダリング
 	err = t.Execute(w, data)
 	if err != nil {
 		log.Fatal(err)
