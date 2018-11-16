@@ -70,8 +70,46 @@ $ make deploy
 
 `https://todobackend.com/client/index.html?[プロジェクトURL]` にアクセスして動作を確認できます。
 
+## ローカルでの開発環境の用意
+
+Dockerがあれば、ローカルでの開発環境を簡単に用意できます
+
+まず、テンポラリなMySQLサーバを起動します。起動と同時にデータベースとテーブルが作成されます。
+
+``` console
+$ make dev-start
+```
+
+APIサーバをビルドして起動します
+
+``` console
+$ make server
+```
+
+開発が終了したらMySQLサーバを消します
+
+``` console
+$ make dev-stop
+```
+
+## 開発時に便利なコマンド
+
 ## ビルド方法
 
 ``` console
 $ make build
+```
+
+## マネージドクラウドに保存されているログの確認
+
+マネージドクラウドはWebコンテナのSTDOUTとSTDERRを`/var/log/container/*/haconiwa.out` `/var/log/container/*/haconiwa.err` に保存しています。
+
+以下のコマンドでそれぞれのログを時系列にローカルのSTDOUTに表示します
+
+``` console
+$ make logs-out
+```
+
+``` console
+$ make logs-err
 ```
