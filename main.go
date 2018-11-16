@@ -21,7 +21,11 @@ type todoHandler struct {
 }
 
 func main() {
-	err := godotenv.Load()
+	exe, err := os.Executable()
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = godotenv.Load(filepath.Join(filepath.Dir(exe), ".env"))
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
