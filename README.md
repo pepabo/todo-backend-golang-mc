@@ -68,7 +68,9 @@ $ make deploy
 
 ## 動作確認方法
 
-`https://todobackend.com/client/index.html?[プロジェクトURL]` にアクセスして動作を確認できます。
+`https://todobackend.com/client/index.html?[プロジェクトURL]/todos` にアクセスして動作を確認できます。
+
+(ex. https://todobackend.com/client/index.html?https://todo-backend-golang-mc.lolipop.io/todos )
 
 ## ローカルでの開発環境の用意
 
