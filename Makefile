@@ -9,7 +9,7 @@ ROTATE   ?= 5
 
 GO ?= GO111MODULE=on go
 
-RELEASE_FILES = server templates
+RELEASE_FILES = server templates assets
 
 build:
 	$(GO) build -o server

@@ -1,0 +1,29 @@
+body {
+    margin: auto;
+    padding: 0 2rem;
+    background: #FFCC33;
+    font-family: -apple-system, Helvetica, BlinkMacSystemFont, ヒラギノ角ゴシック, ヒラギノ角ゴ ProN W3, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Source Sans Pro", Arial, Verdana, Meiryo, sans-serif;
+    font-feature-settings: 'pkna';
+    font-size: 1rem;
+    letter-spacing: .08rem;
+}
+h1, p {
+    text-align: center;
+}
+.license-text {
+    text-align: center;
+    color: #403230;
+    font-size: 12px;
+}
+.license-text a,
+.license-text a:visited,
+.license-text a:hover,
+.license-text a:active {
+    color: #147ECC;
+}
+.gopher {
+    text-align: center;
+}
+.gopher img {
+    width: 400px;
+}

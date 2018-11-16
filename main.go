@@ -65,6 +65,19 @@ func main() {
 	// `/` のルーティング
 	r.Get("/", indexHandler)
 
+	// `/assets/` のルーティング
+	r.Get("/assets/*", func(w http.ResponseWriter, r *http.Request) {
+		exe, err := os.Executable()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		// 静的ファイル配信
+		fs := http.StripPrefix("/assets/", http.FileServer(http.Dir(filepath.Join(filepath.Dir(exe), "assets"))))
+
+		fs.ServeHTTP(w, r)
+	})
+
 	log.Println("Start server.")
 	// Webサーバの起動 ( 0.0.0.0:8080でlisten。ルーティングにgo-chiを使用 )
 	log.Fatal(http.ListenAndServe(":8080", r))
