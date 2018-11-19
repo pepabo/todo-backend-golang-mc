@@ -10,6 +10,7 @@ https://todobackend.com/client/index.html?https://todo-backend-golang-mc.lolipop
 
 - [ロリポップ！マネージドクラウド](https://mc.lolipop.jp)で新規Goプロジェクトを作成します。
 - [SSH公開鍵](https://mc.lolipop.jp/console/sshkeys)の設定を済ませてください( [ヘルプ](https://mclolipop.zendesk.com/hc/ja/articles/360001057808-%E5%85%AC%E9%96%8B%E9%8D%B5%E3%81%AE%E4%BD%9C%E6%88%90-%E7%99%BB%E9%8C%B2%E6%96%B9%E6%B3%95) )。
+    - Windowsの環境ヘルプは[こちら](docs/HOW_TO_SETUP_WINDOWS_ENVIRONMENT.md)
 
 ### SSHの接続テスト
 
