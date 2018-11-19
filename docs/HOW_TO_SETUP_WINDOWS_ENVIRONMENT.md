@@ -63,7 +63,7 @@ Makeをダウンロードします。
 
 ![img](ssh-keygen.png)
 
-マネージドクラウドへの登録も[ヘルプ](https://mclolipop.zendesk.com/hc/ja/articles/360001057808-%E5%85%AC%E9%96%8B%E9%8D%B5%E3%81%AE%E4%BD%9C%E6%88%90-%E7%99%BB%E9%8C%B2%E6%96%B9%E6%B3%95)をみて実施してください。
+SSH公開鍵の登録も[ヘルプ](https://mclolipop.zendesk.com/hc/ja/articles/360001057808-%E5%85%AC%E9%96%8B%E9%8D%B5%E3%81%AE%E4%BD%9C%E6%88%90-%E7%99%BB%E9%8C%B2%E6%96%B9%E6%B3%95)をみて実施してください。
 
 ## README.mdの作業
 
