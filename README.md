@@ -119,6 +119,28 @@ $ make logs-out
 $ make logs-err
 ```
 
+## 各ディレクトリ/ファイルの一口解説
+
+- `initdb.sql`
+  - データベースのスキーマ定義と、初期のデータ
+- `Makefile`
+  - ビルドやデプロイの手続きをまとめたMakefile. 使い方は上記READMEを参照のこと
+- `main.go`
+  - プログラムの開始地点(`main()` 関数)と、サーバ起動・ルーティングなどの主な処理。
+- `todo.go`
+  - todosテーブルのビジネスロジックを記述したコード (所謂モデルというものです)
+- `go.mod`
+  - vgoというパッケージ管理ツールの生成するファイル. (ruyにおけるGemfile、npmにおけるpackage.jsonみたいなもの)
+- `go.sum`
+  - vgoというパッケージ管理ツールの生成するファイル. (ロックファイルのようなもの。厳密には違う)
+- `templates/`
+  - `html/template` パッケージで利用するテンプレートファイル
+- `assets`
+  - cssや画像ファイルなど. ファイル配信のサンプルで利用
+- `docs/`
+  - Windowsの方向けの設定方法です!
+
+
 ## References
 
 - https://github.com/mforman/todo-backend-golang
