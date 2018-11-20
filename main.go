@@ -39,6 +39,7 @@ func main() {
 	r := chi.NewRouter()
 
 	// CORSの設定 go-chi のミドルウェア機構を使用
+	// Todo-Backendからのアクセスを許可するため
 	cors := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
@@ -51,19 +52,19 @@ func main() {
 
 	// `/todos` のルーティング
 	r.Route("/todos", func(r chi.Router) {
-		r.Get("/", handler.listTodos)
-		r.Post("/", handler.createTodo)
-		r.Delete("/", handler.deleteAllTodos)
+		r.Get("/", handler.listTodos)         // 'GET /todos'
+		r.Post("/", handler.createTodo)       // 'POST /todos'
+		r.Delete("/", handler.deleteAllTodos) // 'DELETE /todos'
 
 		r.Route("/{id}", func(r chi.Router) {
-			r.Get("/", handler.getTodo)
-			r.Patch("/", handler.updateTodo)
-			r.Delete("/", handler.deleteTodo)
+			r.Get("/", handler.getTodo)       // 'GET /todos/:id'
+			r.Patch("/", handler.updateTodo)  // 'PATCH /todos/:id'
+			r.Delete("/", handler.deleteTodo) // 'DELETE /todos/:id'
 		})
 	})
 
 	// `/` のルーティング
-	r.Get("/", indexHandler)
+	r.Get("/", indexHandler) // 'GET /'
 
 	// `/assets/` のルーティング
 	r.Get("/assets/*", func(w http.ResponseWriter, r *http.Request) {
@@ -218,6 +219,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// urlカラムに参照を追加
 func addURLToTodos(r *http.Request, todos ...*Todo) {
 	scheme := "https"
 	baseURL := scheme + "://" + r.Host + "/todos/"

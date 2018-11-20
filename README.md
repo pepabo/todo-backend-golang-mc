@@ -71,9 +71,45 @@ $ make deploy
 
 ## 動作確認方法
 
+### フロントサイド(Todo-Backend)と繋いで表示してみましょう
 `https://todobackend.com/client/index.html?[プロジェクトURL]/todos` にアクセスして動作を確認できます。
 
 (ex. https://todobackend.com/client/index.html?https://todo-backend-golang-mc.lolipop.io/todos )
+
+あるいは、[https://todobackend.com/client/](https://todobackend.com/client/)に `[プロジェクトURL]/todos` を入力しても良いです
+
+### 直接cURLでリクエストしてみよう
+
+コマンドラインから
+
+```console
+$ export PROJECT_DOMAIN="プロジェクトURL"
+```
+
+一覧を表示
+```console
+$ curl https://$PROJECT_DOMAIN/todos
+[{"title":"マネージドクラウドに登録する","completed":false,"order":1,"url":"https://polished-miyakonojo-8226.lolipop.io/todos/1"},{"title":"マネージドクラウドでGoアプリケーションをデプロイする","completed":false,"order":2,"url":"https://polished-miyakonojo-8226.lolipop.io/todos/2"}]
+```
+
+作成
+```console
+$ curl -X POST -d '{"title":"curlから登録してみる","completed":false, "order":3}}' https://$PROJECT_DOMAIN/todos
+{"title":"curlから登録してみる","completed":false,"order":3,"url":"https://polished-miyakonojo-8226.lolipop.io/todos/3"}
+```
+
+更新
+```console
+$ curl -X PATCH -d '{"completed":true}' https://$PROJECT_DOMAIN/todos/3
+{"title":"curlから登録してみる","completed":true,"order":3,"url":"https://polished-miyakonojo-8226.lolipop.io/todos/3"}
+```
+
+削除
+```console
+$ curl -X DELETE https://$PROJECT_DOMAIN/todos/3
+$ curl https://$PROJECT_DOMAIN/todos
+[{"title":"マネージドクラウドに登録する","completed":false,"order":1,"url":"https://polished-miyakonojo-8226.lolipop.io/todos/1"},{"title":"マネージドクラウドでGoアプリケーションをデプロイする","completed":false,"order":2,"url":"https://polished-miyakonojo-8226.lolipop.io/todos/2"}]
+```
 
 ## ローカルでの開発環境の用意
 
@@ -118,6 +154,38 @@ $ make logs-out
 ``` console
 $ make logs-err
 ```
+
+## 各ディレクトリ/ファイルの一口解説
+
+- `initdb.sql`
+  - データベースのスキーマ定義と、初期のデータ
+- `Makefile`
+  - ビルドやデプロイの手続きをまとめたMakefile. 使い方は上記READMEを参照のこと
+- `main.go`
+  - プログラムの開始地点(`main()` 関数)と、サーバ起動・ルーティングなどの主な処理。
+- `todo.go`
+  - todosテーブルのビジネスロジックを記述したコード (所謂モデルというものです)
+- `go.mod`
+  - vgoというパッケージ管理ツールの生成するファイル. (ruyにおけるGemfile、npmにおけるpackage.jsonみたいなもの)
+- `go.sum`
+  - こちらもvgoが生成するファイル
+- `templates/`
+  - `html/template` パッケージで利用するテンプレートファイル
+- `assets`
+  - cssや画像ファイルなど. ファイル配信のサンプルで利用
+- `docs/`
+  - Windowsの方向けの設定方法です!
+
+## 利用している主なパッケージ
+
+- [go-chi](https://github.com/go-chi/chi)
+  - シンプルなルーティング機能を提供してくれるパッケージ
+- [sqlx](https://github.com/jmoiron/sqlx)
+  - Goの標準sqlパッケージを拡張するパッケージ
+  - Selectの結果をStructにマッピングしてくれる機能など
+- [godotenv](https://github.com/joho/godotenv)
+  - `.env`ファイルから環境変数を読み出す機能を持つパッケージ
+  - データベース名、パスワードをアプリケーションに渡すために利用
 
 ## References
 
