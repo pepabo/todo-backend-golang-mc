@@ -78,35 +78,35 @@ $ make deploy
 
 あるいは、[https://todobackend.com/client/](https://todobackend.com/client/)に `[プロジェクトURL]/todos` を入力しても良いです
 
-### 直接curlでリクエストしてみよう
+### 直接cURLでリクエストしてみよう
 
 コマンドラインから
 
-```
-export PROJECT_DOMAIN="プロジェクトURL"
+```console
+$ export PROJECT_DOMAIN="プロジェクトURL"
 ```
 
 一覧を表示
-```
+```console
 $ curl https://$PROJECT_DOMAIN/todos
 [{"title":"マネージドクラウドに登録する","completed":false,"order":1,"url":"https://polished-miyakonojo-8226.lolipop.io/todos/1"},{"title":"マネージドクラウドでGoアプリケーションをデプロイする","completed":false,"order":2,"url":"https://polished-miyakonojo-8226.lolipop.io/todos/2"}]
 ```
 
 作成
-```
-curl -XPOST -d '{"title":"curlから登録してみる","completed":false, "order":3}}' https://$PROJECT_DOMAIN/todos
+```console
+$ curl -X POST -d '{"title":"curlから登録してみる","completed":false, "order":3}}' https://$PROJECT_DOMAIN/todos
 {"title":"curlから登録してみる","completed":false,"order":3,"url":"https://polished-miyakonojo-8226.lolipop.io/todos/3"}
 ```
 
 更新
-```
-curl -XPATCH -d '{"completed":true}' https://$PROJECT_DOMAIN/todos/3
+```console
+$ curl -X PATCH -d '{"completed":true}' https://$PROJECT_DOMAIN/todos/3
 {"title":"curlから登録してみる","completed":true,"order":3,"url":"https://polished-miyakonojo-8226.lolipop.io/todos/3"}
 ```
 
 削除
-```
-$ curl -XDELETE https://$PROJECT_DOMAIN/todos/3
+```console
+$ curl -X DELETE https://$PROJECT_DOMAIN/todos/3
 $ curl https://$PROJECT_DOMAIN/todos
 [{"title":"マネージドクラウドに登録する","completed":false,"order":1,"url":"https://polished-miyakonojo-8226.lolipop.io/todos/1"},{"title":"マネージドクラウドでGoアプリケーションをデプロイする","completed":false,"order":2,"url":"https://polished-miyakonojo-8226.lolipop.io/todos/2"}]
 ```
@@ -176,7 +176,7 @@ $ make logs-err
 - `docs/`
   - Windowsの方向けの設定方法です!
 
-## 今回利用している主なパッケージ
+## 利用している主なパッケージ
 
 - [go-chi](https://github.com/go-chi/chi)
   - シンプルなルーティング機能を提供してくれるパッケージ
