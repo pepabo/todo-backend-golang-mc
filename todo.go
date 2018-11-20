@@ -55,12 +55,12 @@ func (t *TodoService) GetAll() ([]*Todo, error) {
 
 // Get 指定のTODOを返す
 func (t *TodoService) Get(id int) (*Todo, error) {
-	todo := Todo{}
-	err := t.db.Get(&todo, "SELECT * FROM todos WHERE id = ?", id)
+	todo := &Todo{}
+	err := t.db.Get(todo, "SELECT * FROM todos WHERE id = ?", id)
 	if err != nil {
 		return nil, err
 	}
-	return &todo, nil
+	return todo, nil
 }
 
 // Save TODOを新規保存もしくは更新する
