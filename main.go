@@ -67,17 +67,7 @@ func main() {
 	r.Get("/", indexHandler) // 'GET /'
 
 	// `/assets/` のルーティング
-	r.Get("/assets/*", func(w http.ResponseWriter, r *http.Request) {
-		exe, err := os.Executable()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		// 静的ファイル配信
-		fs := http.StripPrefix("/assets/", http.FileServer(http.Dir(filepath.Join(filepath.Dir(exe), "assets"))))
-
-		fs.ServeHTTP(w, r)
-	})
+	r.Get("/assets/*", assetsHandler)
 
 	log.Println("Start server.")
 	// Webサーバの起動 ( 0.0.0.0:8080でlisten。ルーティングにgo-chiを使用 )
@@ -217,6 +207,18 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func assetsHandler(w http.ResponseWriter, r *http.Request) {
+	exe, err := os.Executable()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// 静的ファイル配信
+	fs := http.StripPrefix("/assets/", http.FileServer(http.Dir(filepath.Join(filepath.Dir(exe), "assets"))))
+
+	fs.ServeHTTP(w, r)
 }
 
 // urlカラムに参照を追加
