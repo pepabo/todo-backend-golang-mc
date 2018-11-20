@@ -174,7 +174,7 @@ $ make logs-err
   - こちらもvgoが生成するファイル
 - `templates/`
   - `html/template` パッケージで利用するテンプレートファイル
-- `assets`
+- `assets/`
   - cssや画像ファイルなど. ファイル配信のサンプルで利用
 - `docs/`
   - Windowsの方向けの設定方法です!
