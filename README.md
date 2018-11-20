@@ -71,9 +71,41 @@ $ make deploy
 
 ## 動作確認方法
 
+### フロントサイド(Todo-Backend)と繋いで表示してみましょう
 `https://todobackend.com/client/index.html?[プロジェクトURL]/todos` にアクセスして動作を確認できます。
 
 (ex. https://todobackend.com/client/index.html?https://todo-backend-golang-mc.lolipop.io/todos )
+
+### 直接curlでリクエストしてみよう
+
+```
+export PROJECT_DOMAIN="プロジェクトURL"
+```
+
+一覧を表示
+```
+$ curl https://$PROJECT_DOMAIN/todos
+[{"title":"マネージドクラウドに登録する","completed":false,"order":1,"url":"https://polished-miyakonojo-8226.lolipop.io/todos/1"},{"title":"マネージドクラウドでGoアプリケーションをデプロイする","completed":false,"order":2,"url":"https://polished-miyakonojo-8226.lolipop.io/todos/2"}]
+```
+
+作成
+```
+curl -XPOST -d '{"title":"curlから登録してみる","completed":false, "order":3}}' https://$PROJECT_DOMAIN/todos
+{"title":"curlから登録してみる","completed":false,"order":3,"url":"https://polished-miyakonojo-8226.lolipop.io/todos/3"}
+```
+
+更新
+```
+curl -XPATCH -d '{"completed":true}' https://$PROJECT_DOMAIN/todos/3
+{"title":"curlから登録してみる","completed":true,"order":3,"url":"https://polished-miyakonojo-8226.lolipop.io/todos/3"}
+```
+
+削除
+```
+$ curl -XDELETE https://$PROJECT_DOMAIN/todos/3
+$ curl https://$PROJECT_DOMAIN/todos
+[{"title":"マネージドクラウドに登録する","completed":false,"order":1,"url":"https://polished-miyakonojo-8226.lolipop.io/todos/1"},{"title":"マネージドクラウドでGoアプリケーションをデプロイする","completed":false,"order":2,"url":"https://polished-miyakonojo-8226.lolipop.io/todos/2"}]
+```
 
 ## ローカルでの開発環境の用意
 
