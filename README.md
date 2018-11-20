@@ -76,7 +76,11 @@ $ make deploy
 
 (ex. https://todobackend.com/client/index.html?https://todo-backend-golang-mc.lolipop.io/todos )
 
+あるいは、[https://todobackend.com/client/](https://todobackend.com/client/)に `[プロジェクトURL]/todos` を入力しても良いです
+
 ### 直接curlでリクエストしてみよう
+
+コマンドラインから
 
 ```
 export PROJECT_DOMAIN="プロジェクトURL"
@@ -164,7 +168,7 @@ $ make logs-err
 - `go.mod`
   - vgoというパッケージ管理ツールの生成するファイル. (ruyにおけるGemfile、npmにおけるpackage.jsonみたいなもの)
 - `go.sum`
-  - vgoというパッケージ管理ツールの生成するファイル. (ロックファイルのようなもの。厳密には違う)
+  - こちらもvgoが生成するファイル
 - `templates/`
   - `html/template` パッケージで利用するテンプレートファイル
 - `assets`
@@ -172,6 +176,16 @@ $ make logs-err
 - `docs/`
   - Windowsの方向けの設定方法です!
 
+## 今回利用している主なパッケージ
+
+- [go-chi](https://github.com/go-chi/chi)
+  - シンプルなルーティング機能を提供してくれるパッケージ
+- [sqlx](https://github.com/jmoiron/sqlx)
+  - Goの標準sqlパッケージを拡張するパッケージ
+  - Selectの結果をStructにマッピングしてくれる機能など
+- [godotenv](https://github.com/joho/godotenv)
+  - `.env`ファイルから環境変数を読み出す機能を持つパッケージ
+  - データベース名、パスワードをアプリケーションに渡すために利用
 
 ## References
 
